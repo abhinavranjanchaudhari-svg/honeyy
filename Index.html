@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Rose Day 🌹</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Poppins:wght@200;300;400;600&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #050507;
+    --card: rgba(15, 15, 18, 0.85);
+    --text: #ffffff;
+    --sub: rgba(255,255,255,0.5);
+    --accent: #ff0000;
+    --gold: #d4af37;
+    --key-bg: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
+}
+
+.white-mode {
+    --bg: #ffffff;
+    --card: rgba(255, 255, 255, 0.9);
+    --text: #1a1a1a;
+    --sub: #888888;
+    --accent: #ff4d6d;
+    --gold: #c5a028;
+    --key-bg: #f9f9f9;
+    --border: #eeeeee;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+    height: 100dvh;
+    background: var(--bg);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    color: var(--text);
+    transition: background 0.8s ease, color 0.5s ease;
+}
+
+#theme-toggle {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    z-index: 100;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--key-bg);
+    border: 1px solid var(--border);
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+#petal-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.page {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.hidden { opacity: 0; pointer-events: none; transform: scale(1.05); filter: blur(15px); }
+
+/* ---------- LOCK PAGE ---------- */
+.lock-card { width: min(320px, 85vw); text-align: center; }
+#pass-display { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; }
+.dot { width: 12px; height: 12px; border: 1.5px solid var(--border); border-radius: 50%; transition: 0.3s; }
+.dot.active { background: #ff2a4d; border-color: #ff2a4d; box-shadow: 0 0 10px #ff2a4d; }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.key { width: 70px; height: 70px; border-radius: 50%; background: var(--key-bg); border: 1px solid var(--border); color: var(--text); font-size: 24px; cursor: pointer; transition: 0.2s; }
+.key:active { transform: scale(0.9); background: var(--accent); color: white; }
+
+/* ---------- TYPOGRAPHY ---------- */
+.luxury-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: clamp(35px, 10vw, 52px);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(to bottom, var(--text), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 15px 0;
+    line-height: 1.1;
+}
+
+.glass-card {
+    width: min(400px, 90vw);
+    padding: 40px 30px;
+    border-radius: 35px;
+    background: var(--card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+/* Updated Offering Style - Horizontal focus */
+.offering-box {
+    margin: 25px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.offering-visual {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.offering-lotus { font-size: 55px; line-height: 1; filter: drop-shadow(0 0 10px var(--accent)); }
+.offering-rose { font-size: 25px; animation: offeringPulse 2s infinite ease-in-out; }
+
+@keyframes offeringPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.quote { font-family: 'Playfair Display', serif; font-size: 18px; padding: 20px; margin: 25px 0; background: rgba(255,0,0,0.05); border-radius: 15px; border-left: 3px solid var(--accent); }
+
+.btn-premium {
+    margin-top: 30px; padding: 16px 45px;
+    background: linear-gradient(135deg, #630d16, #ff0000);
+    color: white; border: none; border-radius: 100px;
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer;
+}
+
+.rose-main { font-size: 110px; animation: float 5s infinite; }
+@keyframes float { 0%,100% {transform:translateY(0)} 50% {transform:translateY(-20px)} }
+
+/* --- GAME UI --- */
+.game-status { position: absolute; top: 80px; text-align: center; z-index: 30; }
+#count { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--gold); }
+.rose { position: absolute; font-size: 50px; cursor: pointer; }
+
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" loop><source src="honey.mp3" type="audio/mpeg"></audio>
+
+<div id="theme-toggle" onclick="toggleTheme()">☀️</div>
+<canvas id="petal-canvas"></canvas>
+
+<div class="page" id="page0">
+    <div class="lock-card">
+        <div style="font-size:10px; letter-spacing:4px; color:var(--sub); margin-bottom:20px;">AUTHENTICATE</div>
+        <div id="pass-display"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div class="keypad">
+            <button class="key" onclick="press(1)">1</button><button class="key" onclick="press(2)">2</button><button class="key" onclick="press(3)">3</button>
+            <button class="key" onclick="press(4)">4</button><button class="key" onclick="press(5)">5</button><button class="key" onclick="press(6)">6</button>
+            <button class="key" onclick="press(7)">7</button><button class="key" onclick="press(8)">8</button><button class="key" onclick="press(9)">9</button>
+            <button class="key" style="visibility:hidden"></button><button class="key" onclick="press(0)">0</button>
+            <button class="key" onclick="clearPass()" style="font-size:12px; background:none; border:none;">DEL</button>
+        </div>
+    </div>
+</div>
+
+<div class="page hidden" id="page1">
+    <div style="text-align:center;">
+        <div class="rose-main">🌹</div>
+        <h1 class="luxury-title">Happy<br>Rose Day</h1>
+        <p style="letter-spacing:6px; color:var(--sub); font-size:10px;">FOR THE ONE WHO BLOOMS</p>
+        <button class="btn-premium" onclick="go(2)">Open Letter</button>
+    </div>
+</div>
+
+<div class="page hidden" id="page2">
+    <div class="glass-card">
+        <h2 style="font-family:'Playfair Display';">A Pure Offering</h2>
+        
+        <div class="offering-box">
+            <div class="offering-lotus">🪷</div>
+            <p style="font-size: 11px; letter-spacing: 2px; color: var(--accent); font-weight: 600; text-transform: uppercase;">
+                A rose offered to the lotus
+            </p>
+            <div class="offering-rose">🌹</div>
+        </div>
+
+        <div class="quote">“Gulab ko kya hi gulab diya jaye 🤌”</div>
+        <p style="font-size:14px; line-height:1.8; color:var(--sub);">Sach bolu to it is not about these days actually everyday is special with you 💗and each and every day has its own beauty and therefore everyday is same and lovable mam 💗 and thanks for making them special 🤌 and truly no expectations 🤌 actually greatful for your presence 💗thank u 🍯.</p>
+        <button class="btn-premium" onclick="go(3)">Play a Game</button>
+    </div>
+</div>
+
+<div class="page hidden" id="page3">
+    <div class="game-status">
+        <div id="count">0<span>/5</span></div>
+    </div>
+    <div id="gameArea" style="width:100%; height:100%;"></div>
+</div>
+
+<div class="page hidden" id="page4">
+    <div class="glass-card">
+        <p style="font-family:'Playfair Display'; line-height:1.8; font-size:18px;">
+            మీ భాగంలో వచ్చిన గులాబీని దేవుడికి అర్పించాను…<br>
+            ఆయన చేతుల్లో నుంచి అయినా మీకు చేరుతుందేమో అని
+        </p>
+        <button class="btn-premium" onclick="go(1)">Okay 🥰</button>
+    </div>
+</div>
+
+<script>
+const bgMusic = document.getElementById("bgMusic");
+let inputCode = "";
+const correctCode = "0501";
+const pages = [page0, page1, page2, page3, page4];
+
+function toggleTheme() {
+    document.body.classList.toggle('white-mode');
+    document.getElementById('theme-toggle').innerText = document.body.classList.contains('white-mode') ? "🌙" : "☀️";
+}
+
+function press(num) {
+    if(inputCode.length === 0) bgMusic.play().then(() => bgMusic.pause()).catch(()=>{});
+    if(inputCode.length < 4) {
+        inputCode += num;
+        updateDots();
+        if(inputCode.length === 4) setTimeout(verify, 300);
+    }
+}
+
+function updateDots() {
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach((d, i) => d.classList.toggle('active', i < inputCode.length));
+}
+
+function clearPass() { inputCode = ""; updateDots(); }
+
+function verify() {
+    if(inputCode === correctCode) { 
+        bgMusic.play(); 
+        document.body.classList.add('white-mode'); 
+        document.getElementById('theme-toggle').style.display = 'flex';
+        document.getElementById('theme-toggle').innerText = "🌙";
+        go(1); 
+    }
+    else { clearPass(); }
+}
+
+function go(idx) {
+    pages.forEach(p => p.classList.add('hidden'));
+    pages[idx].classList.remove('hidden');
+    if(idx === 3) startGame();
+}
+
+const canvas = document.getElementById('petal-canvas');
+const ctx = canvas.getContext('2d');
+let petals = [];
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize); resize();
+
+class Petal {
+    constructor() { this.reset(); this.y = Math.random() * canvas.height; }
+    reset() {
+        this.x = Math.random() * canvas.width; this.y = -20;
+        this.size = Math.random() * 7 + 4; this.speed = Math.random() * 1 + 0.5;
+        this.angle = Math.random() * 360; this.opacity = Math.random() * 0.5 + 0.2;
+    }
+    draw() {
+        ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.angle * Math.PI/180);
+        ctx.beginPath(); ctx.ellipse(0, 0, this.size, this.size/1.5, 0, 0, Math.PI*2);
+        ctx.shadowBlur = 10; ctx.shadowColor = "rgba(255,0,0,0.8)";
+        ctx.fillStyle = `rgba(255, 0, 50, ${this.opacity})`;
+        ctx.fill(); ctx.restore();
+    }
+    update() { this.y += this.speed; this.angle += 1; if(this.y > canvas.height) this.reset(); }
+}
+for(let i=0; i<30; i++) petals.push(new Petal());
+function anim() { ctx.clearRect(0,0,canvas.width,canvas.height); petals.forEach(p=>{p.update();p.draw()}); requestAnimationFrame(anim); }
+anim();
+
+let count = 0;
+function updateCounter() { document.getElementById("count").innerHTML = `${count}<span>/5</span>`; }
+function startGame() { count = 0; updateCounter(); document.getElementById("gameArea").innerHTML = ""; spawn(); }
+function spawn() {
+    if(count >= 5) return;
+    const r = document.createElement("div");
+    r.className = "rose"; r.innerText = "🌹";
+    r.style.left = Math.random()*80 + 10 + "%"; r.style.top = "-50px";
+    document.getElementById("gameArea").appendChild(r);
+    const a = r.animate([{top: "-50px"}, {top: "110dvh"}], {duration: 3000});
+    r.onclick = () => { count++; updateCounter(); r.remove(); if(count>=5) setTimeout(()=>go(4), 500); else spawn(); };
+    a.onfinish = () => { if(r.parentNode) { r.remove(); spawn(); } };
+}
+</script>
+</body>
+</html>
+""
